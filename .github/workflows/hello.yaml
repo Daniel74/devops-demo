@@ -17,6 +17,7 @@ jobs:
         run: |
           echo "Branch: $BRANCH"
   second-job:
+    needs: information
     runs-on: ubuntu-latest
     steps:
       - name: Second Job
