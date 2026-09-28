@@ -1,20 +1,23 @@
-name: Hello DevOps
+name: DevOps Demo
 on:
   push:
   workflow_dispatch:
 jobs:
-  hello:
+  information:
     runs-on: ubuntu-latest
     steps:
-      - name: Hello
-        run: echo "Hello DevOps!"
-      - name: Show Branch
-        env:
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          echo "Branch: $BRANCH"
       - name: Show Repository
         env:
           REPO: ${{ github.repository }}
         run: |
           echo "Repository: $REPO"
+      - name: Show Branch
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          echo "Branch: $BRANCH"
+  second-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Second Job
+        run: echo "This is another job."
