@@ -11,7 +11,6 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Lauf-Informationen anzeigen
         run: |
@@ -38,3 +37,11 @@ jobs:
       - name: Deploy vorbereiten
         if: github.ref == 'refs/heads/main'
         run: echo "Deploy wird vorbereitet"
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment-Platzhalter
+        run: echo "Deployment für ${{ github.ref_name }}"
