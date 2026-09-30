@@ -28,6 +28,14 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Konfiguration anzeigen
         run: echo "Python ${{ env.PYTHON_VERSION}} in ${{ env.APP_ENV }}"
+      - name: Pip-Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip
+      - name: Pip-Cache Inhalt ausgeben
+        run: ls ~/.cache/pip
       - name: Dependencies installieren
         run: python -m pip install -r requirements.txt
       - name: Test ausführen
