@@ -13,6 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Lauf-Informationen anzeigen
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Runner: ${{ runner.os }}"
       - name: Repository auschecken
         uses: actions/checkout@v4
       - name: Python installieren
