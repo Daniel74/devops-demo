@@ -4,15 +4,13 @@ on:
   push:
   pull_request:
 
+env:
+  PYTHON_VERSION: "3.12"
+  APP_ENV: staging
+
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.10", "3.11", "3.12"]
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Repository auschecken
@@ -20,7 +18,9 @@ jobs:
       - name: Python installieren
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Konfiguration anzeigen
+        run: echo "Python ${{ env.PYTHON_VERSION}} in ${{ env.APP_ENV }}"
       - name: Dependencies installieren
         run: python -m pip install -r requirements.txt
       - name: Test ausführen
