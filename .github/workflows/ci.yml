@@ -25,3 +25,7 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Test ausführen
         run: python -m pytest -v
+      - name: Umgebung wechseln
+        env:
+          APP_ENV: production
+        run: echo "Step sieht ${{ env.APP_ENV }}"
