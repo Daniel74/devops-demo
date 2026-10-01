@@ -85,6 +85,9 @@ jobs:
       contents: write
       actions: read
     steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
       - name: Build-Artifact herunterladen
         uses: actions/download-artifact@v4
         with:
