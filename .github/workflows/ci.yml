@@ -48,6 +48,11 @@ jobs:
       - name: Deploy vorbereiten
         if: github.ref == 'refs/heads/main'
         run: echo "Deploy wird vorbereitet"
+      - name: Deploy Secret prüfen
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "Token-Länge: ${#DEPLOY_TOKEN}"
       - name: Version ermitteln
         id: version
         run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
