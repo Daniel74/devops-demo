@@ -53,6 +53,9 @@ jobs:
           DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         run: |
           echo "Token-Länge: ${#DEPLOY_TOKEN}"
+      - name: Deployment-Ziel anzeigen
+        run: |
+          echo "Deployment-Ziel: ${{ vars.DEPLOY_TARGET }}"
       - name: Version ermitteln
         id: version
         run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
