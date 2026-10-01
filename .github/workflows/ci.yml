@@ -1,3 +1,6 @@
+permissions:
+  contents: read
+
 name: CI
 
 on:
@@ -21,48 +24,52 @@ jobs:
           echo "Branch: ${{ github.ref_name }}"
           echo "Event: ${{ github.event_name }}"
           echo "Runner: ${{ runner.os }}"
+
       - name: Repository auschecken
         uses: actions/checkout@v4
+
       - name: Python installieren
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Konfiguration anzeigen
         run: echo "Python ${{ env.PYTHON_VERSION}} in ${{ env.APP_ENV }}"
+
       - name: Pip-Cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: ${{ runner.os }}-pip
+
       - name: Dependencies installieren
         run: python -m pip install -r requirements.txt
+
       - name: Pip-Cache Inhalt ausgeben
         run: ls ~/.cache/pip
+
       - name: Test ausführen
         run: python -m pytest -v
+
       - name: Umgebung wechseln
         env:
           APP_ENV: production
         run: echo "Step sieht ${{ env.APP_ENV }}"
+
       - name: Deploy vorbereiten
         if: github.ref == 'refs/heads/main'
         run: echo "Deploy wird vorbereitet"
-      - name: Deploy Secret prüfen
-        env:
-          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-        run: |
-          echo "Token-Länge: ${#DEPLOY_TOKEN}"
-      - name: Deployment-Ziel anzeigen
-        run: |
-          echo "Deployment-Ziel: ${{ vars.DEPLOY_TARGET }}"
+
       - name: Version ermitteln
         id: version
         run: echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
       - name: Paket bauen
         run: |
           mkdir -p build
           python -m zipfile -c build/app.zip src/
+
       - name: Build-Artifact hochladen
         uses: actions/upload-artifact@v4
         with:
@@ -73,15 +80,35 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+      actions: read
     steps:
-      - name: Deployment-Platzhalter
-        run: echo "Deployment für ${{ github.ref_name }}"
-      - name: Version ausgeben
-        run: echo "Deploying Version ${{ needs.test.outputs.version }}"
       - name: Build-Artifact herunterladen
         uses: actions/download-artifact@v4
         with:
           name: app-paket
           path: build/
+
       - name: Inhalt prüfen
         run: ls -l build
+
+      - name: Deployment-Ziel anzeigen
+        run: |
+          echo "Deployment-Ziel: ${{ vars.DEPLOY_TARGET }}"
+
+      - name: Deploy Secret prüfen
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        run: |
+          echo "Token-Länge: ${#DEPLOY_TOKEN}"
+
+      - name: Release erstellen
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" \
+            --title "Version 1.0.${{ github.run_number }}" \
+            --notes "Automatisches Deployment aus GitHub Actions" \
+            build/app.zip
